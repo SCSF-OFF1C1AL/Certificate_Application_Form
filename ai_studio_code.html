@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificate Application | SCSF</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Share+Tech+Mono&display=swap');
+
+    /* ---------- General Body & Container ---------- */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #000;
+      background-image: radial-gradient(circle at 20% 20%, #00ffcc22 0%, transparent 60%),
+                        radial-gradient(circle at 80% 80%, #00ffff22 0%, transparent 60%);
+      color: #00ffee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    .container {
+      background: rgba(10, 10, 10, 0.85);
+      border: 1px solid #00ffcc55;
+      box-shadow: 0 0 25px #00ffcc33, inset 0 0 15px #00ffcc22;
+      border-radius: 12px;
+      padding: 40px 30px;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+      position: relative; /* For loading spinner positioning */
+      box-sizing: border-box; /* Include padding in element's total width/height */
+    }
+
+    /* ---------- Form ---------- */
+    h2 {
+      margin-bottom: 25px;
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffff;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #aaffee;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #00ffcc88;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      background: #000;
+      color: #00ffee;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      box-sizing: border-box; /* Include padding in element's total width/height */
+    }
+
+    .form-group input:focus {
+      border-color: #00ffff;
+      box-shadow: 0 0 10px #00ffff88;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .submit-button {
+      background: linear-gradient(90deg, #00ffff, #00ff99);
+      color: #000;
+      font-weight: bold;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px #00ffcc55;
+      width: 100%; /* Make button full width on smaller screens */
+      max-width: 300px; /* Limit max width for larger screens */
+    }
+
+    .submit-button:hover {
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 0 30px #00ffffaa;
+    }
+
+    /* ---------- Overlay / Popup ---------- */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup {
+      background: #0d0d0d;
+      border: 1px solid #00ffcc55;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%; /* Make popup responsive */
+      color: #00ffee;
+      text-align: center;
+      box-shadow: 0 0 25px #00ffcc33;
+      animation: fadeIn 0.4s ease;
+      box-sizing: border-box;
+    }
+
+    .popup h3 {
+      color: #ff5555;
+      margin-bottom: 15px;
+      font-size: 22px;
+      text-shadow: 0 0 8px #ff555599;
+    }
+
+    .popup p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .popup-buttons {
+      display: flex; /* Use flexbox for buttons */
+      flex-direction: column; /* Stack buttons vertically on small screens */
+      gap: 10px; /* Space between buttons */
+    }
+
+    .popup-buttons button {
+      padding: 12px 22px;
+      margin: 0; /* Remove horizontal margin for flexbox */
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      width: 100%; /* Full width for buttons in column layout */
+    }
+
+    .confirm-button {
+      background: #00ffcc;
+      color: #000;
+    }
+    .confirm-button:hover {
+      background: #00ffee;
+    }
+
+    .edit-button {
+      background: #222;
+      color: #00ffcc;
+      border: 1px solid #00ffcc77;
+    }
+    .edit-button:hover {
+      background: #333;
+    }
+
+    /* ---------- Success Message ---------- */
+    .success-message {
+      display: none;
+      background: #002b22;
+      border: 1px solid #00ffcc77;
+      border-radius: 12px;
+      padding: 30px;
+      color: #00ffcc;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      max-width: 460px; /* Consistent with container */
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .success-message h3 {
+      color: #00ffcc;
+      margin-bottom: 15px;
+      font-size: 24px;
+    }
+    .success-message p {
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    /* ---------- Loading Spinner ---------- */
+    .loading-spinner {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 998;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+    }
+    .spinner {
+      border: 8px solid #f3f3f322;
+      border-top: 8px solid #00ffcc;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ---------- Media Queries for Responsiveness ---------- */
+
+    /* Mobile-specific styles (screens up to 600px wide) */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px; /* Reduce padding on body for smaller screens */
+      }
+      .container {
+        padding: 25px 20px; /* Adjust container padding */
+        border-radius: 8px; /* Slightly smaller border-radius */
+      }
+      h2 {
+        font-size: 20px; /* Smaller heading font size */
+        margin-bottom: 20px;
+      }
+      .form-group input {
+        padding: 10px 12px; /* Smaller input padding */
+        font-size: 14px; /* Smaller input font size */
+      }
+      .submit-button {
+        padding: 12px 20px; /* Smaller button padding */
+        font-size: 15px; /* Smaller button font size */
+        width: 100%; /* Ensure full width on mobile */
+        max-width: none; /* Remove max-width on mobile */
+      }
+      .popup {
+        padding: 20px; /* Adjust popup padding */
+      }
+      .popup h3 {
+        font-size: 18px; /* Smaller popup heading */
+      }
+      .popup p {
+        font-size: 14px; /* Smaller popup text */
+        margin-bottom: 20px;
+      }
+      .popup-buttons {
+        flex-direction: column; /* Stack buttons vertically */
+      }
+      .popup-buttons button {
+        padding: 10px 15px; /* Smaller popup button padding */
+        font-size: 14px;
+      }
+      .success-message {
+        padding: 25px 20px;
+        border-radius: 8px;
+      }
+      .success-message h3 {
+        font-size: 20px;
+      }
+      .success-message p {
+        font-size: 15px;
+      }
+    }
+
+    /* Tablet-specific styles (screens between 601px and 768px wide) */
+    @media (min-width: 601px) and (max-width: 768px) {
+      .container {
+        padding: 30px 25px;
+      }
+      h2 {
+        font-size: 22px;
+      }
+      .submit-button {
+        max-width: 280px; /* Slightly smaller max width for tablets */
+      }
+      .popup-buttons {
+        flex-direction: row; /* Keep buttons side-by-side on tablets */
+        justify-content: center;
+      }
+      .popup-buttons button {
+        width: auto; /* Allow buttons to size naturally */
+        flex-grow: 1; /* Distribute space evenly */
+        max-width: 150px; /* Limit individual button width */
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="applicationForm">
+  <h2>🎓 Certificate Application Form</h2>
+  <form id="certificateApplication">
+    <div class="form-group">
+      <label for="fullName">Full Name:</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+    </div>
+    <div class="form-group">
+      <label for="courseName">Course Name:</label>
+      <input type="text" id="courseName" name="courseName" placeholder="Ex: Ethical Hacking Fundamentals" required>
+    </div>
+    <div class="button-container">
+      <button type="submit" class="submit-button">Submit Application</button>
+    </div>
+  </form>
+
+  <!-- Loading -->
+  <div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- Popup -->
+<div class="overlay" id="confirmationOverlay">
+  <div class="popup">
+    <h3>🔒 Confirm Your Details</h3>
+    <p>Please make sure your name and email are correct. Incorrect information will result in rejection of your certificate application.</p>
+    <div class="popup-buttons">
+      <button type="button" class="confirm-button" id="confirmSubmit">Yes, All Correct ✅</button>
+      <button type="button" class="edit-button" id="editInfo">Edit Information ✏️</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success -->
+<div class="success-message" id="successMessage">
+  <h3>🎉 Thank You!</h3>
+  <p>Your application has been successfully submitted. We are verifying your details.</p>
+  <p>✅ If all information is correct, your certificate will be sent to your registered email address.</p>
+  <p>💬 Stay updated! Message us on our website for updates.</p>
+</div>
+
+<script>
+const applicationForm = document.getElementById('certificateApplication');
+const confirmationOverlay = document.getElementById('confirmationOverlay');
+const confirmSubmitButton = document.getElementById('confirmSubmit');
+const editInfoButton = document.getElementById('editInfo');
+const successMessage = document.getElementById('successMessage');
+const mainFormContainer = document.getElementById('applicationForm');
+const loadingSpinner = document.getElementById('loadingSpinner');
+
+// REPLACE THIS WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URL
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby539mWIjLk6LphbwKT9WwPqsBycoRlxS2l0VmhX2ATkelScHCXtPDCb6uYMMiC7RGR/exec";
+
+applicationForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  confirmationOverlay.style.display = 'flex';
+});
+
+confirmSubmitButton.addEventListener('click', function(){
+  confirmationOverlay.style.display = 'none';
+  loadingSpinner.style.display = 'flex'; // show loading spinner
+
+  const data = {
+    fullName: document.getElementById('fullName').value,
+    email: document.getElementById('email').value,
+    courseName: document.getElementById('courseName').value
+  };
+
+  // Simulate network delay for 3 seconds to show the loading spinner
+  setTimeout(()=>{
+    fetch(WEB_APP_URL, {
+      method:'POST',
+      mode:'no-cors', /* Important for Google Apps Script */
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      // Since mode is 'no-cors', response.ok will always be false.
+      // You might need to check your Google Apps Script logs for successful submission.
+      console.log("Application data sent. Response (no-cors mode):", response);
+    })
+    .catch(err => {
+      console.error("Error submitting application:", err);
+      // Optionally show an error message to the user
+    })
+    .finally(() => {
+      loadingSpinner.style.display='none'; // Hide loading spinner
+      mainFormContainer.style.display='none'; // Hide the form
+      successMessage.style.display='block'; // Show success message
+      window.scrollTo({top:0, behavior:'smooth'}); // Scroll to top
+      applicationForm.reset(); // Clear form fields
+    });
+  }, 3000); // 3000ms = 3 seconds delay
+});
+
+editInfoButton.addEventListener('click', function(){
+  confirmationOverlay.style.display = 'none'; // Hide the confirmation popup
+});
+</script>
+
+</body>
+</html>
